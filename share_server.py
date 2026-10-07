@@ -165,7 +165,7 @@ textarea:focus { outline: none; border-color: var(--primary);
     </div>
     <div class="hdr-right">
       <div class="status"><span class="dot" id="dot"></span><span id="dotLabel">已连接</span></div>
-      <button class="btn ghost" id="btnRefresh" onclick="refresh()">刷新</button>
+      <button class="btn ghost" id="btnRefresh" onclick="refresh(true)">刷新</button>
     </div>
   </header>
 
@@ -250,12 +250,24 @@ function renderFiles(files) {
   });
   box.innerHTML = html;
 }
-async function refresh() {
+var lastText = '';      // 最近一次与服务器一致的文字
+var textDirty = false;  // 是否有未保存的文字改动
+
+function setTextBox(t) {
+  textBox.value = t;
+  lastText = t;
+  textDirty = false;
+}
+textBox.addEventListener('input', function () {
+  textDirty = (textBox.value !== lastText);
+});
+async function refresh(force) {
   try {
     var r = await fetch('/state', { cache: 'no-store' });
     var s = await r.json();
     setStatus(true);
-    if (document.activeElement !== textBox) textBox.value = s.text || '';
+    // 有未保存改动时跳过文字更新，保护用户输入；手动刷新/上传后恢复自动刷新
+    if (force || !textDirty) setTextBox(s.text || '');
     renderFiles(s.files || []);
   } catch (e) { setStatus(false); }
 }
@@ -267,7 +279,7 @@ async function uploadText() {
   try {
     var r = await fetch('/text', { method: 'POST', body: t });
     var j = await r.json();
-    if (j.ok) { toast('文字已上传'); refresh(); } else { toast('失败：' + (j.error || '未知')); }
+    if (j.ok) { setTextBox(t); toast('文字已上传'); refresh(); } else { toast('失败：' + (j.error || '未知')); }
   } catch (e) { toast('请求失败：' + e); }
   btn.disabled = false;
   btn.textContent = '上传';
@@ -276,7 +288,7 @@ async function clearText() {
   if (!confirm('确定清除全部文字内容？')) return;
   try {
     await fetch('/clear_text', { method: 'POST' });
-    textBox.value = '';
+    setTextBox('');
     toast('文字已清除'); refresh();
   } catch (e) { toast('失败：' + e); }
 }
