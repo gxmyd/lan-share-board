@@ -43,7 +43,7 @@ README.md
 screenshots/      # 展示图
 ```
 
-运行后自动生成数据目录（默认在运行用户主目录，即 `os.path.expanduser('~')`）：
+运行后自动生成数据目录（与 `share_server.py` **同一个目录**）：
 
 ```
 share_data/
@@ -51,7 +51,7 @@ share_data/
 └── files/          # 上传的文件本体
 ```
 
-Windows 为 `C:\Users\你的用户名\share_data\`，Linux/macOS 为 `~/share_data/`，Termux 为 `/data/data/com.termux/files/home/share_data/`。
+例如 `share_server.py` 放在 `E:\莫移达\share_server_windows\`，数据就存在 `E:\莫移达\share_server_windows\share_data\`；Linux 同理，脚本放哪，数据就存哪。
 
 ## 快速开始
 
@@ -164,7 +164,7 @@ chmod +x ~/.termux/boot/start-share.sh
 | `MAX_TEXT` | 200MB | 单次文字上限 |
 | `MAX_FILE` | 200MB | 单个文件上限 |
 | `CHUNK` | 1MB | 分块读写大小 |
-| `HOME` | `~` | 数据存储根目录 |
+| `HERE` | 脚本同目录 | 数据存储根目录 |
 
 ## 使用说明
 

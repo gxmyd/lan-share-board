@@ -15,8 +15,8 @@ import threading
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-HOME = os.path.expanduser('~')   # 自动识别用户主目录，跨平台（Windows/Linux/macOS/Android Termux）
-BASE = os.path.join(HOME, 'share_data')
+HERE = os.path.dirname(os.path.abspath(__file__))   # 数据存放到脚本所在目录，同目录部署（Windows/Linux 通用）
+BASE = os.path.join(HERE, 'share_data')
 FILE_DIR = os.path.join(BASE, 'files')
 MANIFEST = os.path.join(BASE, 'manifest.json')
 PORT = 8080
@@ -71,6 +71,7 @@ INDEX = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>共享剪贴板</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234f46e5'/%3E%3Ctext x='50' y='70' font-size='52' text-anchor='middle' fill='%23ffffff' font-family='sans-serif'%3E%E5%89%AA%3C/text%3E%3C/svg%3E">
 <style>
 :root {
   --bg: #f4f5f7;
