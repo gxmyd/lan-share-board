@@ -5,16 +5,6 @@
 - 纯 Python 标准库，**零第三方依赖**，单文件实现
 - 跨平台：Windows / Linux / macOS / 树莓派 / Android（Termux）
 
-## 界面预览
-
-桌面端
-
-![桌面端界面](screenshots/showcase-1-desktop.png)
-
-移动端（手机浏览器）
-
-![移动端界面](screenshots/showcase-2-mobile.png)
-
 ## 功能
 
 | 功能 | 说明 |
@@ -40,7 +30,6 @@
 ```
 share_server.py   # 主程序（唯一需要运行的文件）
 README.md
-screenshots/      # 展示图
 ```
 
 运行后自动生成数据目录（与 `share_server.py` **同一个目录**）：
@@ -194,7 +183,3 @@ chmod +x ~/.termux/boot/start-share.sh
 ## 安全
 
 无账号密码，内网可访问者均可增删内容，请只在可信局域网使用，勿暴露到公网。
-
-## License
-
-MIT License — 随便用、随便改。
