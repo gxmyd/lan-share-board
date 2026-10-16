@@ -656,7 +656,7 @@ if __name__ == '__main__':
     srv = Server(('0.0.0.0', PORT), Handler)
     print('ShareServer v2.1 已启动，监听 0.0.0.0:%d' % PORT, flush=True)
     ips = list_local_ips()
-    port_suffix = '' if PORT == 80 else ':%d' % PORT
+    port_suffix = ':%d' % PORT
     if ips:
         print('其他设备访问地址：', flush=True)
         for ip in ips:
