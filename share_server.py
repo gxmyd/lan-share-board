@@ -8,6 +8,7 @@
 仅依赖 Python 标准库，零第三方依赖。
 """
 import os
+import sys
 import json
 import time
 import secrets
@@ -15,6 +16,7 @@ import socket
 import threading
 import ipaddress
 import urllib.parse
+import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 HERE = os.path.dirname(os.path.abspath(__file__))   # 数据存放到脚本所在目录，同目录部署（Windows/Linux 通用）
@@ -23,7 +25,7 @@ FILE_DIR = os.path.join(BASE, 'files')
 MANIFEST = os.path.join(BASE, 'manifest.json')
 PORT = 8080
 MAX_TEXT = 200 * 1024 * 1024          # 文字单次上限 200MB（避免一次吃满内存）
-MAX_FILE = 200 * 1024 * 1024          # 单个文件上限 200MB
+MAX_FILE = 2048 * 1024 * 1024          # 单个文件上限 2GB
 CHUNK = 1024 * 1024                   # 分块读写 1MB
 
 os.makedirs(FILE_DIR, exist_ok=True)
@@ -663,4 +665,12 @@ if __name__ == '__main__':
             print('  http://%s%s/' % (ip, port_suffix), flush=True)
     else:
         print('  http://127.0.0.1%s/ （仅本机）' % port_suffix, flush=True)
+
+    # Windows 双击运行后自动打开浏览器（用第一个 IP，即列表第一行）；其他平台跳过
+    if sys.platform == 'win32':
+        try:
+            webbrowser.open('http://%s%s/' % (ips[0] if ips else '127.0.0.1', port_suffix))
+        except Exception:
+            pass
+
     srv.serve_forever()
