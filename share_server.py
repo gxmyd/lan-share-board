@@ -11,7 +11,9 @@ import os
 import json
 import time
 import secrets
+import socket
 import threading
+import ipaddress
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -620,8 +622,45 @@ class Server(ThreadingHTTPServer):
     request_queue_size = 128
 
 
+def list_local_ips():
+    """收集本机所有 IPv4，192.168.* 排最前，过滤 loopback/link-local"""
+    ips = set()
+    try:
+        hn = socket.gethostname()
+        for info in socket.getaddrinfo(hn, None, socket.AF_INET):
+            ips.add(info[4][0])
+    except Exception:
+        pass
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ips.add(s.getsockname()[0])
+        s.close()
+    except Exception:
+        pass
+    valid = []
+    for ip in ips:
+        try:
+            addr = ipaddress.ip_address(ip)
+            if addr.is_loopback or addr.is_link_local or addr.is_multicast:
+                continue
+            valid.append(ip)
+        except ValueError:
+            continue
+    valid.sort(key=lambda x: (0 if x.startswith('192.168.') else 1 if ipaddress.ip_address(x).is_private else 2, x))
+    return valid
+
+
 if __name__ == '__main__':
     cleanup_orphans()
     srv = Server(('0.0.0.0', PORT), Handler)
-    print('ShareServer v2.1 listening on 0.0.0.0:%d' % PORT, flush=True)
+    print('ShareServer v2.1 已启动，监听 0.0.0.0:%d' % PORT, flush=True)
+    ips = list_local_ips()
+    port_suffix = '' if PORT == 80 else ':%d' % PORT
+    if ips:
+        print('其他设备访问地址：', flush=True)
+        for ip in ips:
+            print('  http://%s%s/' % (ip, port_suffix), flush=True)
+    else:
+        print('  http://127.0.0.1%s/ （仅本机）' % port_suffix, flush=True)
     srv.serve_forever()
